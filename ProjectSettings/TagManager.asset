@@ -6,6 +6,7 @@ TagManager:
   tags:
   - tetris
   - Ground
+  - Outside
   layers:
   - Default
   - TransparentFX

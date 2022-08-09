@@ -1,18 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-
 public class Movement : MonoBehaviour
 {
     Rigidbody2D rigid;
     Vector2 input;
     float speed=10, stop=10,Rotation;
-    bool active = true;
+    public bool active = true;
+    public bool elimination = false;
     void Start()
     {
         rigid=GetComponent<Rigidbody2D>();
         rigid.drag = stop;
+        active = true;
     }
     private void Update()
     {
@@ -28,11 +28,27 @@ public class Movement : MonoBehaviour
     {
         rigid.AddForce(input * speed * Time.deltaTime, ForceMode2D.Impulse);
     }
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.CompareTag("Ground"))
+        if(collision.gameObject.CompareTag("Ground")&&active==true)
         {
             active = false;
+            this.tag = "Ground";
+            StartCoroutine(StopTime(1));
+            FindObjectOfType<Spawn>().spawnthepiece();
+        }
+        if(collision.gameObject.CompareTag("Outside")&&active==true)
+        {
+            active = false;
+            FindObjectOfType<Spawn>().spawnthepiece();
         }
     }
+    public IEnumerator StopTime(float time)
+    {
+        rigid.constraints = RigidbodyConstraints2D.FreezePositionX;
+        yield return new WaitForSecondsRealtime(time);
+        rigid.constraints = RigidbodyConstraints2D.None;
+    }
+
+
 }
