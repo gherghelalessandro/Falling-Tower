@@ -13,4 +13,8 @@ public class LoadFunction : MonoBehaviour
     {
         Application.Quit();
     }
+    public void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 }
