@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8415992438898713574}
   m_Layer: 0
   m_Name: DeSpawnLine
-  m_TagString: Untagged
+  m_TagString: Outside
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -71,3 +71,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a47f2764d50b6a148b0c43cbaadbaa4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  destroy: 0

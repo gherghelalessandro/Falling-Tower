@@ -5,9 +5,8 @@ public class Movement : MonoBehaviour
 {
     Rigidbody2D rigid;
     Vector2 input;
-    float speed=10, stop=10,Rotation;
+    float speed=3, stop=10,Rotation;
     public bool active = true;
-    public bool elimination = false;
     void Start()
     {
         rigid=GetComponent<Rigidbody2D>();
@@ -20,35 +19,37 @@ public class Movement : MonoBehaviour
         {
             input.x = Input.GetAxis("Horizontal");
             Rotation = Input.GetAxis("rotation") * 60f;
-            transform.Rotate(new Vector3(0, 0, Rotation) * Time.deltaTime);
         }
         
     }
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        rigid.AddForce(input * speed * Time.deltaTime, ForceMode2D.Impulse);
+        rigid.MovePosition(rigid.position+new Vector2(input.x * speed*Time.fixedDeltaTime,-rigid.mass*Time.deltaTime));
+        rigid.MoveRotation(rigid.rotation+Rotation*Time.fixedDeltaTime);
     }
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.CompareTag("Ground")&&active==true)
+        if(collision.gameObject.tag.Contains("Ground")&&active==true)
         {
             active = false;
-            this.tag = "Ground";
-            StartCoroutine(StopTime(1));
-            FindObjectOfType<Spawn>().spawnthepiece();
+            this.tag = "Ground1";
+            this.rigid.mass = 3;
+
         }
-        if(collision.gameObject.CompareTag("Outside")&&active==true)
+        if (collision.gameObject.CompareTag("Outside") && active == true)
         {
             active = false;
-            FindObjectOfType<Spawn>().spawnthepiece();
         }
+        
     }
-    public IEnumerator StopTime(float time)
+    public void freeze(bool pause)
     {
-        rigid.constraints = RigidbodyConstraints2D.FreezePositionX;
-        yield return new WaitForSecondsRealtime(time);
+        StartCoroutine(pausetime(pause));
+    }
+    private IEnumerator pausetime(bool pause)
+    {
+        rigid.constraints = RigidbodyConstraints2D.FreezePosition;
+        yield return new WaitUntil(() => pause == true);
         rigid.constraints = RigidbodyConstraints2D.None;
     }
-
-
 }
