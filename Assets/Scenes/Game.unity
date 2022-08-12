@@ -990,6 +990,7 @@ MonoBehaviour:
   ScoreText: {fileID: 809766588}
   RemainText: {fileID: 1423553189}
   camera1: {fileID: 519420031}
+  platform: {fileID: 2650307399112927255, guid: 9faf130e61089b24dbb18f9e6d381426, type: 3}
   power1: 0
   power2: 0
 --- !u!4 &1446863791

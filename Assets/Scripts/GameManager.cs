@@ -17,11 +17,14 @@ public class GameManager : MonoBehaviour
     TextMeshProUGUI RemainText;
     [SerializeField]
     Camera camera1;
+    [SerializeField]
+    GameObject platform;
     
     string[] divideS,divideR;
     int Remaining,Score,Remaining2=3,i=1,timer=3;
     bool pause = false;
     public bool power1 = false,power2=false;
+    bool activepower2 = false,activepower1=false;
 
     GameObject playerobj;
 
@@ -35,6 +38,7 @@ public class GameManager : MonoBehaviour
     }
     void Update()
     {
+        
         if (End.gameover==true)
         {
             spawner.gameObject.SetActive(false);
@@ -42,6 +46,14 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            if(power1==false&&activepower1==false)
+            {
+                Invoke("activatepower", timer);
+            }
+            if(power2==false&&activepower2==false)
+            {
+                Invoke("activatepower2",15);
+            }
             playerobj = GameObject.FindGameObjectWithTag("tetris");
             if (Input.GetKeyUp(KeyCode.P))
             {
@@ -59,25 +71,27 @@ public class GameManager : MonoBehaviour
             
             if(Input.GetKeyUp(KeyCode.Z)&&power1==true)
             {
-                upthepiece();
+                activepower1 = true;
                 power1 = false;
-                StartCoroutine(activatepower(power1, timer));
             }
-            if(Input.GetKeyDown(KeyCode.X))
+            if(Input.GetKeyDown(KeyCode.X)&&power2==true)
             {
-                power2 = true;
-                
+                activepower2=true;
+                power2 = false;
             }
-            if(power2==true)
+            if(activepower1==true)
+            {
+                upthepiece();
+                activepower1 = false;
+            }
+            if(activepower2==true)
             {
                 if (playerobj != null)
                 {
-                    StartCoroutine(littlepiece(20, playerobj));
-                }  
+                    StartCoroutine(littlepiece(30, playerobj));
+                }
             }
         }
-       
-       
     }
     void FixedUpdate()
     {
@@ -102,6 +116,7 @@ public class GameManager : MonoBehaviour
                 End.raisethebar();
                 camera1.transform.position += new Vector3(0, 1,0);
                 spawner.transform.position += new Vector3(0, 2,0);
+                createplatforms();
 
             }
             ScoreText.text = divideS[0] + ":" + Score;
@@ -127,9 +142,17 @@ public class GameManager : MonoBehaviour
         playerobj = GameObject.FindGameObjectWithTag("tetris");
         playerobj.transform.SetPositionAndRotation(playerobj.transform.position+new Vector3(0,3), playerobj.transform.rotation);
     }
-    void movethecamera()
+    void createplatforms()
     {
-
+        int random = Random.Range(3, 5),randomp;
+        int[] randomposition = { -5, -4, 4, 5 };
+        GameObject[] pieces=new GameObject[random];
+        for(int i=0;i<random;i++)
+        {
+            randomp = Random.Range(0, 3);
+            pieces[i]=Instantiate(platform, new Vector3(randomposition[randomp], End.transform.position.y + Random.Range(-5f, 0f)), Quaternion.identity);
+        }
+       
     }
     IEnumerator stopthegame(float time)
     {
@@ -137,15 +160,18 @@ public class GameManager : MonoBehaviour
         Destroy(GameObject.FindGameObjectWithTag("tetris"));
         Debug.Log("Game Over");
     }
-    IEnumerator activatepower(bool activate, int time)
+    void activatepower()
     { 
-        yield return new WaitForSecondsRealtime(time);
-        activate = true;
+        power1 = true;
+    }
+    void activatepower2()
+    {
+        power2 = true;
     }
     IEnumerator littlepiece(int time,GameObject piece)
     {
         piece.transform.localScale = new Vector3(0.6f, 0.6f, 0);
         yield return new WaitForSecondsRealtime(time);
-        power2 = false;
+        activepower2 = false;
     }
 }
