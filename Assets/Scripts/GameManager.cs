@@ -16,12 +16,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI RemainText;
     [SerializeField]
-    Camera camera1;
-    [SerializeField]
     GameObject platform;
 
     string[] divideS, divideR;
-    int Remaining, Score, Remaining2 = 3, i = 1;
+    int Score;
     bool pause = false;
     public bool power1 = false, power2 = false;
     bool[] activepowers = {false,false};
@@ -32,9 +30,8 @@ public class GameManager : MonoBehaviour
     {
         divideS = ScoreText.text.Split(":");
         divideR = RemainText.text.Split(":");
-        Remaining = Remaining2;
         Score = int.Parse(divideS[1]);
-        RemainText.text = divideR[0] + ":" + Remaining;
+        RemainText.text = divideR[0] + ":" + spawner.remains;
         StartCoroutine(settrue((x)=>power1=x,0, 15));
         StartCoroutine(settrue((y) => power2=y,0, 30));
     }
@@ -101,19 +98,12 @@ public class GameManager : MonoBehaviour
         else if(spawner.touch==true)
         {
             Score++;
-            Remaining--;
-            if(Remaining<0)
+            if(spawner.remains<0)
             {
-                i++;
-                Remaining = Remaining2 * i;
-                End.raisethebar();
-                camera1.transform.position += new Vector3(0, 1,0);
-                spawner.transform.position += new Vector3(0, 2,0);
-                createplatforms();
-
+                
             }
             ScoreText.text = divideS[0] + ":" + Score;
-            RemainText.text = divideR[0] + ":" + Remaining;
+            RemainText.text = divideR[0] + ":" + spawner.remains;
             spawner.touch = false;
         }
     }
@@ -133,20 +123,9 @@ public class GameManager : MonoBehaviour
     void upthepiece()
     {
         playerobj = GameObject.FindGameObjectWithTag("tetris");
-        playerobj.transform.SetPositionAndRotation(playerobj.transform.position+new Vector3(0,3), playerobj.transform.rotation);
+        playerobj.transform.position = new Vector3(playerobj.transform.position.x,End.transform.position.y+2);
     }
-    void createplatforms()
-    {
-        int random = Random.Range(3, 5),randomp;
-        int[] randomposition = { -5, -4, 4, 5 };
-        GameObject[] pieces=new GameObject[random];
-        for(int i=0;i<random;i++)
-        {
-            randomp = Random.Range(0, 3);
-            pieces[i]=Instantiate(platform, new Vector3(randomposition[randomp], End.transform.position.y + Random.Range(-5f, 0f)), Quaternion.identity);
-        }
-       
-    }
+    
     IEnumerator settrue(System.Action< bool> active,int index,float timer)
     {
         yield return new WaitForSecondsRealtime(timer);
@@ -161,7 +140,6 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(time);
         Destroy(GameObject.FindGameObjectWithTag("tetris"));
-        Debug.Log("Game Over");
     }
     IEnumerator littlepiece(int time,GameObject piece)
     {

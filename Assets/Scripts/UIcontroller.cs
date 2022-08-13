@@ -16,6 +16,7 @@ public class UIcontroller : MonoBehaviour
     }
     private void Update()
     {
+        
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             if (index > 0)
@@ -41,3 +42,4 @@ public class UIcontroller : MonoBehaviour
         }
     }
 }
+
