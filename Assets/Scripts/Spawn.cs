@@ -39,7 +39,7 @@ public class Spawn : MonoBehaviour
     }
     public IEnumerator spawnthetetrispieces()
     {
-        GameObject newpiece = Instantiate(pieces[remains], new Vector2(Random.Range(-5, 5),linereference.transform.position.y+3), Quaternion.identity);
+        GameObject newpiece = Instantiate(pieces[remains], new Vector2(Random.Range(-6, 6),linereference.transform.position.y+4), Quaternion.identity);
         Movement model=newpiece.GetComponent<Movement>();
         yield return new WaitUntil(() => (model.active==false));
         RemainCheck();
@@ -74,7 +74,7 @@ public class Spawn : MonoBehaviour
                 pieces[i] = Models[randomindex];
             }
             linereference.transform.position += new Vector3(0,raise);
-            camera1.transform.position += new Vector3(0, 1, 0);
+            camera1.transform.position += new Vector3(0, 1.5f, 0);
             createplatforms();
             image.sprite = pieces[remains-1].GetComponent<SpriteRenderer>().sprite;
         }
@@ -82,7 +82,7 @@ public class Spawn : MonoBehaviour
     void createplatforms()
     {
         int randomnr = Random.Range(3, 5), randomp;
-        int[] randomposition = { -7,-6,-5, -4, 4, 5,6,7 };
+        int[] randomposition = { -7,-6,-5,5,6,7 };
         GameObject[] pieces = new GameObject[randomnr];
         for (int i = 0; i < randomnr; i++)
         {

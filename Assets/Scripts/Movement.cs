@@ -7,9 +7,11 @@ public class Movement : MonoBehaviour
     Vector2 input;
     float stop=10,Rotation,movement;
     public bool active = true;
+    AudioSource splash;
     void Start()
     {
         rigid=GetComponent<Rigidbody2D>();
+        splash=GetComponent<AudioSource>();
         rigid.drag = stop;
         active = true;
     }
@@ -30,10 +32,13 @@ public class Movement : MonoBehaviour
     }
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag.Contains("Ground")&&active==true)
+        splash.Play();
+        if (collision.gameObject.tag.Contains("Ground")&&active==true)
         {
+           
             StartCoroutine(timeactive(1));
             this.tag = "Ground1";
+
         }
         if (collision.gameObject.CompareTag("Outside") && active == true)
         {

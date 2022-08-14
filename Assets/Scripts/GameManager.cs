@@ -17,16 +17,21 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI RemainText;
     [SerializeField]
+    TextMeshProUGUI HighScoreText;
+    [SerializeField]
     SpriteRenderer[] images;
-
+    [SerializeField]
+    AudioSource[] audioSources;
+    
     string[] divideS, divideR;
-    int Score;
+    int Score,HighScore;
     int[] timerpow = {15,30,10};
-    bool pause = false;
+    bool pause = false,gameover=false;
     public bool power1 = false, power2 = false;
     bool[] activepowers = {false,false};
 
     GameObject playerobj;
+    TextMeshProUGUI pausetext;
 
     void Start()
     {
@@ -40,14 +45,15 @@ public class GameManager : MonoBehaviour
         }
         StartCoroutine(settrue((x) => power1 = x, 0, timerpow[0]));
         StartCoroutine(settrue((y) => power2 = y, 1, timerpow[1]));
-        
+        HighScoreText.text="HighScore:"+PlayerPrefs.GetInt("HighScore",0).ToString();
+        audioSources[0].PlayDelayed(4f);
     }
     void Update()
     {
         if (End.gameover==true)
         {
             spawner.gameObject.SetActive(false);
-            StartCoroutine(stopthegame(1));
+            StartCoroutine(stopthegame(3));
         }
         else
         {
@@ -89,6 +95,7 @@ public class GameManager : MonoBehaviour
                     StartCoroutine(littlepiece(timerpow[2], playerobj));
                 }
             }
+            
         }
     }
     void FixedUpdate()
@@ -117,13 +124,20 @@ public class GameManager : MonoBehaviour
     }
     void stoptheobjects()
     {
-       if(pause==true)
-       {
-            Time.timeScale = 0;
-       }
-       else
+        pausetext = GameObject.Find("PauseText").GetComponent<TextMeshProUGUI>();
+        if (pausetext.text ==string.Empty)
         {
-            Time.timeScale=1;
+            pausetext.text = "Pause";
+            pause = true;
+            audioSources[0].Pause();
+            Time.timeScale = 0;
+        }
+        else
+        {
+            Time.timeScale = 1;
+            pause = false;
+            pausetext.text = "";
+            audioSources[0].UnPause();
         }
     }
     void upthepiece()
@@ -141,19 +155,33 @@ public class GameManager : MonoBehaviour
     
     IEnumerator settrue(System.Action< bool> active,int index,float timer)
     {
-        yield return new WaitForSecondsRealtime(timer);
-        if (activepowers[index] ==false)
+        if(pause==false&&gameover==false)
         {
-            active(true);
-            images[index].color = Color.green;
+            yield return new WaitForSecondsRealtime(timer);
+            if (activepowers[index] == false&&pause==false&&gameover==false)
+            {
+                active(true);
+                images[index].color = Color.green;
+            }
+            StartCoroutine(settrue(active, index, timer));
         }
-        StartCoroutine(settrue(active,index,timer));    
+          
     }
    
     IEnumerator stopthegame(float time)
     {
-        yield return new WaitForSecondsRealtime(time);
         Destroy(GameObject.FindGameObjectWithTag("tetris"));
+        audioSources[0].Stop();
+        yield return new WaitForSecondsRealtime(time);
+        audioSources[1].Play();
+        TextMeshProUGUI GameOverText = GameObject.Find("GameOverText").GetComponent<TextMeshProUGUI>();
+        GameOverText.text = "Game Over \nYour score is "+Score;
+        if (Score > HighScore)
+        {
+            HighScore = Score;
+            HighScoreText.text = "HighScore:" + HighScore;
+            PlayerPrefs.SetInt("HighScore", HighScore);
+        }
     }
     IEnumerator littlepiece(int time,GameObject piece)
     {

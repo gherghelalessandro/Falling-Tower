@@ -2,25 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class LoadFunction : MonoBehaviour
 {
-    bool active = true;
+    [SerializeField]
+    AudioSource music;
     public void loadScene(int sceneindex)
     {
         SceneManager.LoadScene(sceneindex);
     }
     public void pausethegame()
     {
-        if(active==true)
+        TextMeshProUGUI text = GameObject.Find("PauseText").GetComponent<TextMeshProUGUI>();
+        if(text.text=="")
         {
             Time.timeScale = 0;
-            active = false;
+            text.text = "Pause";
+            music.Pause();
         }
         else
         {
             Time.timeScale = 1;
-            active = true;
+            text.text = "";
+            music.UnPause();
         }
     }
     public void exitthegame()
