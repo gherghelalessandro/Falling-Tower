@@ -87,7 +87,7 @@ public class Spawn : MonoBehaviour
         for (int i = 0; i < randomnr; i++)
         {
             randomp = Random.Range(0, randomposition.Length);
-            pieces[i] = Instantiate(platform, new Vector3(randomposition[randomp], linereference.transform.position.y + Random.Range(-5f, -3f)), Quaternion.identity);
+            pieces[i] = Instantiate(platform, new Vector3(randomposition[randomp], linereference.transform.position.y + Random.Range(-6f, -4f)), Quaternion.identity);
         }
     }
 }
